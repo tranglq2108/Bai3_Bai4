@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DocumentManager</title>
+  <meta name="description" content="Ứng dụng quản lý tài liệu đơn giản cho dự án lớp học.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>DocumentManager</h1>
+    <p>Ứng dụng quản lý tài liệu đơn giản</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="stats-heading">
+      <h2 id="stats-heading">Thống kê</h2>
+      <p>Tổng tài liệu: <strong id="stats-total" aria-live="polite">0</strong></p>
+      <p>Kết quả tìm kiếm: <strong id="stats-result" aria-live="polite">0</strong></p>
+    </section>
+
+    <section aria-labelledby="search-heading">
+      <h2 id="search-heading" style="display: none;">Tìm kiếm văn bản</h2>
+      <div class="search-bar">
+        <input id="search-input" name="search" type="search" placeholder="Nhập tiêu đề hoặc thông tin tìm kiếm..."
+          autocomplete="off">
+      </div>
+      <div class="search-filters">
+        <div class="filter-group">
+          <label for="filter-type">Loại văn bản</label>
+          <select id="filter-type">
+            <option value="">Tất cả</option>
+            <option value="Công văn">Công văn</option>
+            <option value="Quyết định">Quyết định</option>
+            <option value="Hợp đồng">Hợp đồng</option>
+            <option value="Đơn">Đơn</option>
+            <option value="Kế hoạch">Kế hoạch</option>
+            <option value="Biên bản">Biên bản</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-category">Phân loại</label>
+          <select id="filter-category">
+            <option value="">Tất cả</option>
+            <option value="Bản kiểm điểm">Bản kiểm điểm</option>
+            <option value="Báo cáo">Báo cáo</option>
+            <option value="Giấy mời">Giấy mời</option>
+            <option value="Hành chính">Hành chính</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-from">Từ ngày</label>
+          <input id="filter-date-from" type="date">
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-to">Đến ngày</label>
+          <input id="filter-date-to" type="date">
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="list-heading">
+      <div class="list-header">
+        <h2 id="list-heading">Danh sách tài liệu</h2>
+        <button id="add-document-btn" type="button">+ Nhập tài liệu</button>
+      </div>
+      <ul id="document-list" aria-live="polite">
+      </ul>
+      <div id="empty-state" role="status" aria-live="polite">
+        Chưa có tài liệu nào.
+      </div>
+    </section>
+  </main>
+
+  <div id="add-document-modal" role="dialog" aria-modal="true" aria-labelledby="add-modal-title" aria-hidden="true"
+    hidden>
+    <div role="document">
+      <h2 id="add-modal-title">Nhập tài liệu</h2>
+      <form id="add-document-form" aria-label="Form nhập tài liệu">
+        <div>
+          <label for="add-title">Tên văn bản (*)</label>
+          <input id="add-title" name="title" type="text" required>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="add-type">Loại văn bản (*)</label>
+            <select id="add-type" name="type" required>
+              <option value="" disabled selected>Chọn loại</option>
+              <option value="Công văn">Công văn</option>
+              <option value="Quyết định">Quyết định</option>
+              <option value="Hợp đồng">Hợp đồng</option>
+              <option value="Đơn">Đơn</option>
+              <option value="Kế hoạch">Kế hoạch</option>
+              <option value="Biên bản">Biên bản</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+          <div>
+            <label for="add-category">Phân loại (*)</label>
+            <select id="add-category" name="category" required>
+              <option value="" disabled selected>Chọn phân loại</option>
+              <option value="Bản kiểm điểm">Bản kiểm điểm</option>
+              <option value="Báo cáo">Báo cáo</option>
+              <option value="Giấy mời">Giấy mời</option>
+              <option value="Hành chính">Hành chính</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="add-date">Ngày văn bản (*)</label>
+          <input id="add-date" name="date" type="date" required>
+        </div>
+        <div>
+          <label for="add-content">Nội dung văn bản</label>
+          <textarea id="add-content" name="content" rows="4"></textarea>
+        </div>
+        <div>
+          <button type="submit">Lưu</button>
+          <button type="button">Hủy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="edit-document-modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" aria-hidden="true"
+    hidden>
+    <div role="document">
+      <h2 id="edit-modal-title">Sửa tài liệu</h2>
+      <form id="edit-document-form" aria-label="Form sửa tài liệu">
+        <input type="hidden" name="id">
+        <div>
+          <label for="edit-title">Tên văn bản (*)</label>
+          <input id="edit-title" name="title" type="text" required>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="edit-type">Loại văn bản (*)</label>
+            <select id="edit-type" name="type" required>
+              <option value="" disabled>Chọn loại</option>
+              <option value="Công văn">Công văn</option>
+              <option value="Quyết định">Quyết định</option>
+              <option value="Hợp đồng">Hợp đồng</option>
+              <option value="Đơn">Đơn</option>
+              <option value="Kế hoạch">Kế hoạch</option>
+              <option value="Biên bản">Biên bản</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+          <div>
+            <label for="edit-category">Phân loại (*)</label>
+            <select id="edit-category" name="category" required>
+              <option value="" disabled>Chọn phân loại</option>
+              <option value="Bản kiểm điểm">Bản kiểm điểm</option>
+              <option value="Báo cáo">Báo cáo</option>
+              <option value="Giấy mời">Giấy mời</option>
+              <option value="Hành chính">Hành chính</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="edit-date">Ngày văn bản (*)</label>
+          <input id="edit-date" name="date" type="date" required>
+        </div>
+        <div>
+          <label for="edit-content">Nội dung văn bản (Trích yếu)</label>
+          <textarea id="edit-content" name="content" rows="4"></textarea>
+        </div>
+        <div id="edit-success-msg" class="success-message" hidden>
+          * Đã cập nhật thành công!
+        </div>
+        <div>
+          <button type="submit">Lưu</button>
+          <button type="button">Hủy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-document-modal" role="dialog" aria-modal="true" aria-labelledby="view-modal-title" aria-hidden="true"
+    hidden>
+    <div role="document">
+      <h2 id="view-modal-title">Chi tiết văn bản</h2>
+      <div class="view-details">
+        <div class="detail-field">
+          <span class="detail-label">Tên văn bản:</span>
+          <span id="view-title" class="detail-value"></span>
+        </div>
+        <div class="detail-row">
+          <div class="detail-field">
+            <span class="detail-label">Loại văn bản:</span>
+            <span id="view-type" class="detail-value"></span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Phân loại:</span>
+            <span id="view-category" class="detail-value"></span>
+          </div>
+        </div>
+        <div class="detail-field">
+          <span class="detail-label">Ngày văn bản:</span>
+          <span id="view-date" class="detail-value"></span>
+        </div>
+        <div class="detail-field content-field">
+          <span class="detail-label">Nội dung:</span>
+          <div id="view-content" class="detail-value content-box"></div>
+        </div>
+      </div>
+      <div class="view-actions">
+        <button type="button">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="delete-document-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title"
+    aria-describedby="delete-modal-description" aria-hidden="true" hidden>
+    <div role="document">
+      <h2 id="delete-modal-title">Xóa tài liệu</h2>
+      <p id="delete-modal-description">Bạn có chắc muốn xóa tài liệu?</p>
+      <div>
+        <button type="button">Xóa</button>
+        <button type="button">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
